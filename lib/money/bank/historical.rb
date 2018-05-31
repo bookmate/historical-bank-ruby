@@ -40,6 +40,8 @@ class Money
         attr_accessor :timeout
         # type of account on OpenExchangeRates, to know which API endpoints are useable
         attr_accessor :oer_account_type
+        # Redis cnnection object
+        attr_accessor :redis_connection
 
         def initialize
           @base_currency = Currency.new('EUR')
@@ -48,6 +50,7 @@ class Money
           @oer_app_id = nil
           @timeout = 15
           @oer_account_type = RatesProvider::OpenExchangeRates::AccountType::ENTERPRISE
+          @redis_connection = Redis.new
         end
       end
 
@@ -86,7 +89,7 @@ class Money
         # Hash[iso_currency][iso_date]
         @rates = {}
         @store = RatesStore::HistoricalRedis.new(@base_currency,
-                                                 Historical.configuration.redis_url,
+                                                 Historical.configuration.redis_connection,
                                                  Historical.configuration.redis_namespace)
         @provider = RatesProvider::OpenExchangeRates.new(Historical.configuration.oer_app_id,
                                                          @base_currency,

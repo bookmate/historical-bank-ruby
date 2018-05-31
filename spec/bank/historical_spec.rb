@@ -30,7 +30,7 @@ class Money
       before do
         Historical.configure do |config|
           config.base_currency = base_currency
-          config.redis_url = redis_url
+          config.redis_connection = redis
           config.redis_namespace = redis_namespace
           config.oer_app_id = SecureRandom.hex
           config.timeout = 20
@@ -67,7 +67,7 @@ class Money
         end
         # it's pointing to the same cache as the one in bank
         let(:new_store) do
-          RatesStore::HistoricalRedis.new(base_currency, redis_url, redis_namespace)
+          RatesStore::HistoricalRedis.new(base_currency, redis, redis_namespace)
         end
 
         subject { bank.add_rates(currency_date_rate_hash) }
@@ -85,7 +85,7 @@ class Money
 
         # it's pointing to the same cache as the one in bank
         let(:new_store) do
-          RatesStore::HistoricalRedis.new(base_currency, redis_url, redis_namespace)
+          RatesStore::HistoricalRedis.new(base_currency, redis, redis_namespace)
         end
         let(:datetime) { Time.utc(2017, 1, 4, 13, 0, 0) }
 

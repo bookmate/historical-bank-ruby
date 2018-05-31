@@ -21,12 +21,11 @@ require 'spec_helper'
 class Money
   module RatesStore
     describe HistoricalRedis do
-      let(:redis_url) { "redis://localhost:#{ENV['REDIS_PORT']}" }
       let(:redis) { Redis.new(port: ENV['REDIS_PORT']) }
 
       let(:base_currency) { Currency.new('EUR') }
       let(:namespace) { 'currency_test' }
-      let(:store) { HistoricalRedis.new(base_currency, redis_url, namespace) }
+      let(:store) { HistoricalRedis.new(base_currency, redis, namespace) }
       let(:key_prefix) { 'currency_test:EUR' }
 
       let(:usd_date_rate_hash) do
@@ -112,7 +111,13 @@ class Money
         end
 
         context 'when there is a Redis error' do
-          let(:redis_url) { 'redis://localhost:1231' }
+          let(:store) do
+            HistoricalRedis.new(
+              base_currency,
+              Redis.new(url: 'redis://localhost:1231'),
+              namespace
+            )
+          end
 
           it 'fails with RequestFailed' do
             expect { subject }.to raise_error(RatesStore::RequestFailed)
@@ -164,7 +169,13 @@ class Money
         end
 
         context 'when there is a Redis error' do
-          let(:redis_url) { 'redis://localhost:1231' }
+          let(:store) do
+            HistoricalRedis.new(
+              base_currency,
+              Redis.new(url: 'redis://localhost:1231'),
+              namespace
+            )
+          end
 
           it 'fails with RequestFailed' do
             expect { subject }.to raise_error(RatesStore::RequestFailed)
