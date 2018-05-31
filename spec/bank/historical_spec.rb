@@ -22,7 +22,6 @@ class Money
   module Bank
     describe Historical do
       let(:base_currency) { Currency.new('EUR') }
-      let(:redis_url) { "redis://localhost:#{ENV['REDIS_PORT']}" }
       let(:redis) { Redis.new(port: ENV['REDIS_PORT']) }
       let(:redis_namespace) { 'currency_test' }
       let(:bank) { Historical.instance }
@@ -472,7 +471,6 @@ class Money
   describe Money do
     describe '#exchange_with_historical' do
       let(:base_currency) { Currency.new('EUR') }
-      let(:redis_url) { "redis://localhost:#{ENV['REDIS_PORT']}" }
       let(:redis_namespace) { 'currency_test' }
       let(:rates) do
         {
@@ -487,7 +485,6 @@ class Money
       before do
         Bank::Historical.configure do |config|
           config.base_currency = base_currency
-          config.redis_url = redis_url
           config.redis_namespace = redis_namespace
         end
 

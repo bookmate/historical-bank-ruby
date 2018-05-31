@@ -18,7 +18,7 @@
 
 require 'money/bank/historical'
 
-redis_url = 'redis://localhost:6379'
+redis = Redis.new
 namespace = 'currency_example'
 
 Money::Bank::Historical.configure do |config|
@@ -29,7 +29,7 @@ Money::Bank::Historical.configure do |config|
   config.base_currency = Money::Currency.new('USD')
 
   # (optional) the URL of the Redis server (default: 'redis://localhost:6379')
-  config.redis_url = redis_url
+  config.redis_connection = redis
 
   # (optional) Redis namespace to prefix all keys (default: 'currency')
   config.redis_namespace = namespace
@@ -70,6 +70,5 @@ from_money.exchange_to_historical(to_currency, Date.new(2016, 12, 10))
 
 ########## Clean up Redis keys used here ##############
 
-redis = Redis.new(url: redis_url)
 keys = redis.keys("#{namespace}*")
 redis.del(keys)
