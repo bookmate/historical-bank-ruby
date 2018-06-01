@@ -22,7 +22,6 @@ class Money
   module Bank
     describe Historical do
       let(:base_currency) { Currency.new('EUR') }
-      let(:redis_url) { "redis://localhost:#{ENV['REDIS_PORT']}" }
       let(:redis) { Redis.new(port: ENV['REDIS_PORT']) }
       let(:redis_namespace) { 'currency_test' }
       let(:bank) { Historical.instance }
@@ -30,7 +29,7 @@ class Money
       before do
         Historical.configure do |config|
           config.base_currency = base_currency
-          config.redis_url = redis_url
+          config.redis_connection = redis
           config.redis_namespace = redis_namespace
           config.oer_app_id = SecureRandom.hex
           config.timeout = 20
@@ -67,7 +66,7 @@ class Money
         end
         # it's pointing to the same cache as the one in bank
         let(:new_store) do
-          RatesStore::HistoricalRedis.new(base_currency, redis_url, redis_namespace)
+          RatesStore::HistoricalRedis.new(base_currency, redis, redis_namespace)
         end
 
         subject { bank.add_rates(currency_date_rate_hash) }
@@ -85,7 +84,7 @@ class Money
 
         # it's pointing to the same cache as the one in bank
         let(:new_store) do
-          RatesStore::HistoricalRedis.new(base_currency, redis_url, redis_namespace)
+          RatesStore::HistoricalRedis.new(base_currency, redis, redis_namespace)
         end
         let(:datetime) { Time.utc(2017, 1, 4, 13, 0, 0) }
 
@@ -472,7 +471,6 @@ class Money
   describe Money do
     describe '#exchange_with_historical' do
       let(:base_currency) { Currency.new('EUR') }
-      let(:redis_url) { "redis://localhost:#{ENV['REDIS_PORT']}" }
       let(:redis_namespace) { 'currency_test' }
       let(:rates) do
         {
@@ -487,7 +485,6 @@ class Money
       before do
         Bank::Historical.configure do |config|
           config.base_currency = base_currency
-          config.redis_url = redis_url
           config.redis_namespace = redis_namespace
         end
 

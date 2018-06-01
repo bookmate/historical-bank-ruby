@@ -124,7 +124,7 @@ Money::Bank::Historical.configure do |config|
   config.base_currency = Money::Currency.new('USD')
 
   # (optional) the URL of the Redis server (default: 'redis://localhost:6379')
-  config.redis_url = 'redis://localhost:6379'
+  config.connection = Redis.new
 
   # (optional) Redis namespace to prefix all keys (default: 'currency')
   config.redis_namespace = 'currency_historical_gem'
